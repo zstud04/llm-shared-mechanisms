@@ -1,0 +1,42 @@
+name: gemma4_env
+# Separate environment for the Gemma-4 family.
+#
+# Why this is not in the top-level environment.yml:
+#   Gemma 4 (model_type "gemma4" / "gemma4_unified") first ships in
+#   transformers 5.5.0, but world_model_env is pinned to the 4.x line by
+#   transformer_lens 2.x and vllm (which pins transformers<5). Upgrading the
+#   shared env would break the TransformerLens backend mid-experiment, so
+#   Gemma 4 gets its own env and runs on the HF backend only.
+#
+# Consequences, mirrored in config/models.json:
+#   - tl_support is false for every gemma-4 entry (TransformerLens has no
+#     Gemma-4 conversion; its newest gemma support stops at Gemma-3).
+#   - vllm is omitted here; it cannot coexist with transformers>=5.5 yet, so
+#     the vllm backend is unavailable for these models.
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # --- inference / interp backend ---
+      - transformers>=5.5      # first release with gemma4 + gemma4_unified
+      - accelerate             # device_map="auto" sharding for >30B models
+      - huggingface_hub
+      - datasets
+      - torch
+      # --- API models (exp_battery imports these at module load) ---
+      - openai                 # OpenAI + DeepSeek (OpenAI-compatible)
+      - google-genai           # Gemini
+      # --- measures used by core/ ---
+      - pandas
+      - numpy
+      - networkx               # attention-graph betweenness measure
+      - nltk                   # Brown-corpus trigram frequencies
+      # --- misc ---
+      - jaxtyping
+      - torchtyping
+      - tqdm
+variables:
+  # Same meaning as in environment.yml: where model weights are cached.
+  CACHE_DIR: ""

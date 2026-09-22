@@ -1,0 +1,46 @@
+name: phi_env
+# Separate environment for the Phi-3 / Phi-3.5 family.
+#
+# Why this is not in the top-level environment.yml:
+#   The Phi *vision* checkpoint (microsoft/Phi-3.5-vision-instruct) ships custom
+#   modeling code whose image tower hardcodes attn_implementation="flash_attention_2",
+#   so it will not load without flash-attn. world_model_env runs torch 2.11+cu130
+#   (bleeding edge) with no CUDA toolkit on PATH, so flash-attn there can neither
+#   find a prebuilt wheel nor compile. This env pins a torch/CUDA combo that has
+#   published flash-attn wheels (torch 2.5.1 + cu121, cp311) and installs one.
+#
+# The text Phi models (mini/medium/3.5-mini) already run in world_model_env with
+# "trust_remote_code": false (native transformers class). They also run here.
+#
+# flash-attn itself is installed by setup_phi_env.sh AFTER the env exists (it
+# needs torch present at build/resolve time), not from this file.
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # --- torch stack with a flash-attn-compatible CUDA build ---
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.5.1
+      - torchvision==0.20.1
+      # --- inference / interp backend ---
+      - transformers==4.57.6   # same line as world_model_env (accepts dtype=)
+      - accelerate
+      - huggingface_hub
+      - datasets
+      - pillow                 # Phi-3.5-vision image processor
+      # --- API models (exp_battery imports these at module load) ---
+      - openai
+      - google-genai
+      # --- measures used by core/ ---
+      - pandas
+      - numpy
+      - networkx
+      - nltk
+      # --- misc ---
+      - jaxtyping
+      - torchtyping
+      - tqdm
+variables:
+  CACHE_DIR: ""

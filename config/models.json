@@ -1,0 +1,399 @@
+{
+  "_comment": [
+    "Model registry. Fields:",
+    "  path             HF repo id, or the provider's model id for API models",
+    "  type             hf | openai | gemini | deepseek",
+    "  chat_template    key into core/chat_templates.TEMPLATES (null for base models)",
+    "  tl_support       has a TransformerLens conversion (required for backend='tlens')",
+    "  default_backend  backend used when --backend is not passed",
+    "  n_params_b       parameter count in billions; above 30 the model is",
+    "                   automatically sharded across every allocated GPU",
+    "  masked           masked LM rather than autoregressive",
+    "  moe              sparse mixture-of-experts; the dense mlp_pre/mlp_post",
+    "                   hook sites do not exist on these models",
+    "  reasoning        emits a chain-of-thought trace",
+    "  api_logit_support  provider exposes token logprobs"
+  ],
+
+  "gemma-2-2b": {
+    "name": "gemma-2-2b", "path": "google/gemma-2-2b", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 2.6
+  },
+  "gemma-2-2b-it": {
+    "name": "gemma-2-2b-it", "path": "google/gemma-2-2b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 2.6
+  },
+  "gemma-2-9b": {
+    "name": "gemma-2-9b", "path": "google/gemma-2-9b", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 9.2
+  },
+
+  "gemma-2-9b-it": {
+    "name": "gemma-2-9b-it", "path": "google/gemma-2-9b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 9.2
+  },
+  "gemma-2-27b": {
+    "name": "gemma-2-27b", "path": "google/gemma-2-27b", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 27.2
+  },
+  "gemma-2-27b-it": {
+    "name": "gemma-2-27b-it", "path": "google/gemma-2-27b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 27.2
+  },
+  "gemma-3-4b": {
+    "name": "gemma-3-4b", "path": "google/gemma-3-4b-pt", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 4.3
+  },
+  "gemma-3-4b-it": {
+    "name": "gemma-3-4b-it", "path": "google/gemma-3-4b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 4.3
+  },
+  "gemma-3-12b": {
+    "name": "gemma-3-12b", "path": "google/gemma-3-12b-pt", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 12.2
+  },
+  "gemma-3-12b-it": {
+    "name": "gemma-3-12b-it", "path": "google/gemma-3-12b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 12.2
+  },
+  "gemma-3-27b": {
+    "name": "gemma-3-27b", "path": "google/gemma-3-27b-pt", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 27.4
+  },
+  "gemma-3-27b-it": {
+    "name": "gemma-3-27b-it", "path": "google/gemma-3-27b-it", "type": "hf",
+    "chat_template": "gemma", "tl_support": true, "default_backend": "hf",
+    "n_params_b": 27.4
+  },
+  "_gemma4_comment": [
+    "Gemma 4 needs transformers>=5.5 and so runs in its own conda env",
+    "(model_environments/gemma4_env.yml), not world_model_env. Consequences:",
+    "  tl_support is false throughout   TransformerLens ships no Gemma-4",
+    "                                   conversion; interp runs on backend=hf.",
+    "  chat_template is 'gemma4'        Gemma 4 replaced <start_of_turn> with",
+    "                                   <|turn>...<turn|>; the 'gemma' template",
+    "                                   is wrong for these models.",
+    "  moe                              26B-A4B is sparse (128 experts, top-8).",
+    "                                   Its layers keep a dense mlp alongside the",
+    "                                   routed experts and sum the two, so the",
+    "                                   mlp_* hooks would capture only the dense",
+    "                                   half; core/backends/hf.py rejects them.",
+    "                                   attn_head/attn_out/resid_post are fine.",
+    "The *-assistant checkpoints in the collection are speculative-decoding",
+    "drafts, not standalone models, so they are deliberately omitted."
+  ],
+  "gemma-4-12b": {
+    "name": "gemma-4-12b", "path": "google/gemma-4-12B", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 12.0
+  },
+  "gemma-4-12b-it": {
+    "name": "gemma-4-12b-it", "path": "google/gemma-4-12B-it", "type": "hf",
+    "chat_template": "gemma4", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 12.0
+  },
+  "gemma-4-31b": {
+    "name": "gemma-4-31b", "path": "google/gemma-4-31B", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 33.0
+  },
+  "gemma-4-31b-it": {
+    "name": "gemma-4-31b-it", "path": "google/gemma-4-31B-it", "type": "hf",
+    "chat_template": "gemma4", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 33.0
+  },
+  "gemma-4-26b-a4b": {
+    "name": "gemma-4-26b-a4b", "path": "google/gemma-4-26B-A4B", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 27.0, "moe": true
+  },
+  "gemma-4-26b-a4b-it": {
+    "name": "gemma-4-26b-a4b-it", "path": "google/gemma-4-26B-A4B-it", "type": "hf",
+    "chat_template": "gemma4", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 27.0, "moe": true
+  },
+
+  "llama-2-7b": {
+    "name": "llama-2-7b", "path": "meta-llama/Llama-2-7b-hf", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "hf",
+    "n_params_b": 6.7
+  },
+  "llama-2-7b-chat": {
+    "name": "llama-2-7b-chat", "path": "meta-llama/Llama-2-7b-chat-hf", "type": "hf",
+    "chat_template": "llama", "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 6.7
+  },
+  "llama-2-13b": {
+    "name": "llama-2-13b", "path": "meta-llama/Llama-2-13b-hf", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "hf",
+    "n_params_b": 13.0
+  },
+  "llama-2-13b-chat": {
+    "name": "llama-2-13b-chat", "path": "meta-llama/Llama-2-13b-chat-hf", "type": "hf",
+    "chat_template": "llama", "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 13.0
+  },
+  "llama-3.1-8b": {
+    "name": "llama-3.1-8b", "path": "meta-llama/Llama-3.1-8B", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "hf",
+    "n_params_b": 8.0
+  },
+  "llama-3.1-8b-instruct": {
+    "name": "llama-3.1-8b-instruct", "path": "meta-llama/Llama-3.1-8B-Instruct", "type": "hf",
+    "chat_template": "llama", "tl_support": true, "default_backend": "hf",
+    "n_params_b": 8.0
+  },
+  "llama-3.3-70b-instruct": {
+    "name": "llama-3.3-70b-instruct", "path": "meta-llama/Llama-3.3-70B-Instruct", "type": "hf",
+    "chat_template": "llama", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 70.6
+  },
+  "llama-3-70b": {
+    "name": "llama-3-70b", "path": "meta-llama/Meta-Llama-3-70B", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 70.6
+  },
+  "_llama4_comment": [
+    "Llama 4 is a MoE (Scout: 16 experts/109B total; Maverick: 128 experts/400B",
+    "total), 17B active. mlp_* hooks capture only part of each layer, so moe=true",
+    "makes core/backends/hf.py reject them; attn_head/attn_out/resid_post are ok.",
+    "New header markers -> chat_template 'llama4'. Multi-GPU only (see n_params_b)."
+  ],
+  "llama-4-scout": {
+    "name": "llama-4-scout", "path": "meta-llama/Llama-4-Scout-17B-16E", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "n_params_b": 109.0, "moe": true
+  },
+  "llama-4-scout-instruct": {
+    "name": "llama-4-scout-instruct", "path": "meta-llama/Llama-4-Scout-17B-16E-Instruct", "type": "hf",
+    "chat_template": "llama4", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 109.0, "moe": true
+  },
+  "llama-4-maverick-instruct": {
+    "name": "llama-4-maverick-instruct", "path": "meta-llama/Llama-4-Maverick-17B-128E-Instruct", "type": "hf",
+    "chat_template": "llama4", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 400.0, "moe": true
+  },
+  "tulu-3-8b-sft": {
+    "name": "tulu-3-8b-sft", "path": "allenai/Llama-3.1-Tulu-3-8B-SFT", "type": "hf",
+    "chat_template": "llama3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 8.0
+  },
+
+  "_phi_comment": [
+    "Phi-3/3.5 chat markers use <|user|>/<|assistant|>/<|end|> -> chat_template",
+    "'phi3'. Phi-3.5-MoE (16 experts, ~42B total) sets moe=true. The vision",
+    "checkpoint is multimodal; text-only prompts may or may not load cleanly."
+  ],
+  "phi-3-mini-128k-instruct": {
+    "name": "phi-3-mini-128k-instruct", "path": "microsoft/Phi-3-mini-128k-instruct", "type": "hf", "trust_remote_code": false,
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 3.8
+  },
+  "phi-3-medium-4k-instruct": {
+    "name": "phi-3-medium-4k-instruct", "path": "microsoft/Phi-3-medium-4k-instruct", "type": "hf", "trust_remote_code": false,
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 14.0
+  },
+  "phi-3-medium-128k-instruct": {
+    "name": "phi-3-medium-128k-instruct", "path": "microsoft/Phi-3-medium-128k-instruct", "type": "hf", "trust_remote_code": false,
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 14.0
+  },
+  "phi-3.5-mini-instruct": {
+    "name": "phi-3.5-mini-instruct", "path": "microsoft/Phi-3.5-mini-instruct", "type": "hf", "trust_remote_code": false,
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 3.8
+  },
+  "phi-3.5-moe-instruct": {
+    "name": "phi-3.5-moe-instruct", "path": "microsoft/Phi-3.5-MoE-instruct", "type": "hf", "trust_remote_code": false,
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 41.9, "moe": true
+  },
+  "phi-3.5-vision-instruct": {
+    "name": "phi-3.5-vision-instruct", "path": "microsoft/Phi-3.5-vision-instruct", "type": "hf", "trust_remote_code": true, "attn_implementation": "eager",
+    "chat_template": "phi3", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 4.2
+  },
+
+  "_olmo_comment": [
+    "OLMo-2 and OLMo-3 share the <|user|>/<|assistant|> chat markers ->",
+    "chat_template 'olmo' for the aligned checkpoints; SFT/DPO/Instruct all use",
+    "it. Base names (n/a here) would be null."
+  ],
+  "olmo-2-1124-7b-sft": {
+    "name": "olmo-2-1124-7b-sft", "path": "allenai/OLMo-2-1124-7B-SFT", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.3
+  },
+  "olmo-2-1124-7b-dpo": {
+    "name": "olmo-2-1124-7b-dpo", "path": "allenai/OLMo-2-1124-7B-DPO", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.3
+  },
+  "olmo-2-1124-7b-instruct": {
+    "name": "olmo-2-1124-7b-instruct", "path": "allenai/OLMo-2-1124-7B-Instruct", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.3
+  },
+  "olmo-2-1124-13b-sft": {
+    "name": "olmo-2-1124-13b-sft", "path": "allenai/OLMo-2-1124-13B-SFT", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 13.7
+  },
+  "olmo-2-1124-13b-instruct": {
+    "name": "olmo-2-1124-13b-instruct", "path": "allenai/OLMo-2-1124-13B-Instruct", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 13.7
+  },
+  "olmo-2-0325-32b-instruct": {
+    "name": "olmo-2-0325-32b-instruct", "path": "allenai/OLMo-2-0325-32B-Instruct", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 32.0
+  },
+  "olmo-3-7b-instruct": {
+    "name": "olmo-3-7b-instruct", "path": "allenai/Olmo-3-7B-Instruct", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.3
+  },
+  "olmo-3.1-32b-instruct": {
+    "name": "olmo-3.1-32b-instruct", "path": "allenai/Olmo-3.1-32B-Instruct", "type": "hf",
+    "chat_template": "olmo", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 32.0
+  },
+
+  "_gptoss_comment": [
+    "gpt-oss uses the OpenAI 'harmony' response format -> chat_template",
+    "'harmony', which opens the final channel so the answer token comes next.",
+    "Both are MoE (moe=true): 120b ~117B total, 20b ~21B total, 4-bit mxfp4",
+    "weights so the 20b fits one 80GB card and the 120b needs sharding."
+  ],
+  "gpt-oss-20b": {
+    "name": "gpt-oss-20b", "path": "openai/gpt-oss-20b", "type": "hf",
+    "chat_template": "harmony", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 21.0, "moe": true
+  },
+  "gpt-oss-120b": {
+    "name": "gpt-oss-120b", "path": "openai/gpt-oss-120b", "type": "hf",
+    "chat_template": "harmony", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 117.0, "moe": true
+  },
+
+  "qwen-2-7b-instruct": {
+    "name": "qwen-2-7b-instruct", "path": "Qwen/Qwen2-7B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.6
+  },
+  "qwen-2-72b-instruct": {
+    "name": "qwen-2-72b-instruct", "path": "Qwen/Qwen2-72B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 72.7
+  },
+  "qwen-2-57b-a14b-instruct": {
+    "name": "qwen-2-57b-a14b-instruct", "path": "Qwen/Qwen2-57B-A14B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 57.4, "moe": true
+  },
+  "qwen-2.5-7b-instruct": {
+    "name": "qwen-2.5-7b-instruct", "path": "Qwen/Qwen2.5-7B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 7.6
+  },
+  "qwen-2.5-14b-instruct": {
+    "name": "qwen-2.5-14b-instruct", "path": "Qwen/Qwen2.5-14B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 14.8
+  },
+  "qwen-2.5-32b-instruct": {
+    "name": "qwen-2.5-32b-instruct", "path": "Qwen/Qwen2.5-32B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 32.8
+  },
+  "qwen-2.5-72b-instruct": {
+    "name": "qwen-2.5-72b-instruct", "path": "Qwen/Qwen2.5-72B-Instruct", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 72.7
+  },
+  "_qwen25_72b_awq_comment": [
+    "AWQ 4-bit quantized: the on-disk/on-GPU footprint is ~20GB, so it fits a",
+    "single 80GB card even though the dense param count is 72B. n_params_b is",
+    "set to 20 to keep it on the single-GPU path; loading needs autoawq in the",
+    "container. hf backend only (no TransformerLens/quant interp guarantees)."
+  ],
+  "qwen-2.5-72b-instruct-awq": {
+    "name": "qwen-2.5-72b-instruct-awq", "path": "Qwen/Qwen2.5-72B-Instruct-AWQ", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 20.0
+  },
+  "qwen-3-30b-a3b-instruct": {
+    "name": "qwen-3-30b-a3b-instruct", "path": "Qwen/Qwen3-30B-A3B-Instruct-2507", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 30.5, "moe": true
+  },
+  "_qwen3_4b_fp8_comment": [
+    "FP8 checkpoint: weights are pre-quantized to fp8, needs a container with",
+    "fp8-capable transformers/kernels; footprint ~4GB. hf backend only."
+  ],
+  "qwen-3-4b-instruct-fp8": {
+    "name": "qwen-3-4b-instruct-fp8", "path": "Qwen/Qwen3-4B-Instruct-2507-FP8", "type": "hf",
+    "chat_template": "qwen", "tl_support": false, "default_backend": "hf",
+    "n_params_b": 4.0
+  },
+
+  "gpt2-medium": {
+    "name": "gpt2-medium", "path": "gpt2-medium", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "hf",
+    "n_params_b": 0.35
+  },
+  "gpt2-large": {
+    "name": "gpt2-large", "path": "gpt2-large", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "hf",
+    "n_params_b": 0.77
+  },
+  "gpt2-xl": {
+    "name": "gpt2-xl", "path": "gpt2-xl", "type": "hf",
+    "chat_template": null, "tl_support": true, "default_backend": "tlens",
+    "n_params_b": 1.5
+  },
+  "bert": {
+    "name": "bert", "path": "google-bert/bert-base-uncased", "type": "hf",
+    "chat_template": null, "tl_support": false, "default_backend": "hf",
+    "masked": true, "n_params_b": 0.11
+  },
+
+  "gpt-5.2": {
+    "name": "gpt-5.2", "path": "gpt-5.2-2025-12-11", "type": "openai",
+    "reasoning": true, "api_logit_support": true
+  },
+  "gpt-4.1": {
+    "name": "gpt-4.1", "path": "gpt-4.1-2025-04-14", "type": "openai",
+    "reasoning": false, "api_logit_support": true
+  },
+  "gemini-3-pro": {
+    "name": "gemini-3-pro", "path": "gemini-3-pro-preview", "type": "gemini",
+    "reasoning": true, "api_logit_support": false
+  },
+  "gemini-2.5": {
+    "name": "gemini-2.5", "path": "gemini-2.5-pro", "type": "gemini",
+    "reasoning": true, "api_logit_support": false
+  },
+  "gemini-2.0": {
+    "name": "gemini-2.0", "path": "gemini-2.0-flash", "type": "gemini",
+    "reasoning": false, "api_logit_support": false
+  },
+  "deepseek-r1": {
+    "name": "deepseek-r1", "path": "deepseek-reasoner", "type": "deepseek",
+    "reasoning": true, "api_logit_support": false
+  }
+}

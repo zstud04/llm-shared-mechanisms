@@ -1,0 +1,40 @@
+# One CHTC job = all three smoke pipelines for a single model.
+#
+# Used with SMOKE mode in experiment.sh:
+#   chtc/deploy.sh -f chtc/exp_run_smoke.sub -r smoke-<model> -- SMOKE <model_key>
+#
+# deploy.sh passes three submit vars: EXP_ARGS ("SMOKE <model_key>"), HFTOKEN
+# (for gated repos), and NGPU (GPU count; override with `NGPU=4 chtc/deploy.sh ...`
+# for models whose bf16 footprint exceeds NGPU*80GB).
+
+universe = container
+container_image = docker://studdiford/causal:v8
+
+batch_name = worldmodels_smoke_$(Cluster)
+log    = logs/$(Cluster)_$(Process).log
+output = logs/$(Cluster)_$(Process).out
+error  = logs/$(Cluster)_$(Process).err
+
+executable = experiment.sh
+arguments  = $(EXP_ARGS)
+
+should_transfer_files = YES
+transfer_input_files  = experiment.sh, gpu_monitor.sh, llm-world-models.tar
+transfer_output_files = result, gpu_metrics.csv
+when_to_transfer_output = ON_EXIT
+
+# HFTOKEN reaches tools/smoke_test.sh (warmup snapshot_download) and the hf login.
+environment = "CLUSTER_ID=$(Cluster) PROCESS_ID=$(Process) HF_TOKEN=$(HFTOKEN)"
+
++WantGPULab   = true
++GPUJobLength = "short"
++is_resumable = false
+
+request_gpus   = $(NGPU)
+request_cpus   = 8
+request_memory = 200GB
+request_disk   = 400GB
+
+gpus_minimum_memory = 80000
+
+queue 1

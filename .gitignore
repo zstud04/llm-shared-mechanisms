@@ -1,0 +1,109 @@
+# Python cache/compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+data/spose/
+/results/1a/embed_out/gemma-3-1b-it/
+/results/1a/embed_out/gemma-3-1b-it
+
+results/
+#analysis/
+# Conda environments
+*.conda
+*.yaml
+*.yml
+!environment.yml
+# Per-model-family envs (see model_environments/README.md)
+!model_environments/*.yml
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and debug
+*.log
+logs/
+debug.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build/packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Cache
+.cache/
+.pytest_cache/
+mypy_cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# Hugging Face / Transformers cache
+huggingface/
+transformers/
+HF_HOME/
+TRANSFORMERS_CACHE/
+triton_cache/
+temp_cache/
+
+# Experiment results and outputs
+*.tar
+
+*.zip
+*.tsv
+
+# Model weights
+*.bin
+*.pt
+*.ckpt
+*.h5
+*.onnx
+
+.nfs000000020163196c000077f5
+
+
+
+# CHTC / job artifacts
+*.out
+*.err
+*.log
+_results_tmp_unpack/
+chtc-runs/
+gpu_metrics.csv
+# chtc/ holds the job scripts themselves, not artifacts
+!chtc/*.sh
+!chtc/*.sub
+
+results/
+
+# Allow GitHub Actions workflows
+!.github/workflows/*.yml
+
+# --- allow checked-in dataset under data/spose ---
+!data/spose/**
+
+data/causal_mechanism
+data/data_csvs.tar.gz

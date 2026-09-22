@@ -1,0 +1,6 @@
+{
+    "general_instruct": "What is the most likely word/phrase to replace \"BLANK\"? Respond ONLY with the word/phrase.\n\n{prompt}\n\nOption A: {a}\nOption B: {b}\n\nBLANK=",
+    "gemma_instruct": "<start_of_turn>user\nWhat is the most likely word or phrase to replace \"BLANK\"?\nRespond ONLY with the word or phrase.\n\n{prompt}\n\nOption A: {a}\nOption B: {b}\n\nBLANK:\n<end_of_turn>\n<start_of_turn>model",
+    "general_instruct_gemma": "<start_of_turn>user\nWhat is the most likely word or phrase to replace \"BLANK\"?\nRespond ONLY with the word or phrase.\n\n{prompt}\n\nOption A: {a}\nOption B: {b}\n\nBLANK:\n<end_of_turn>\n<start_of_turn>model\n"
+}
+

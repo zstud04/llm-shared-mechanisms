@@ -1,0 +1,46 @@
+# Many independent single-GPU jobs, one per line of params.txt.
+#
+# The ablation sweep is the slow experiment (one forward pass per component per
+# prompt), so it is split by category: each job gets its own
+# --subset-categories value and writes a separately-suffixed CSV. Several
+# one-GPU jobs match far sooner than one long multi-GPU job.
+#
+# params.txt format (one job per line):
+#   <categories>  <model>  <extra args...>
+# e.g.
+#   geocentric_near      gemma-2-27b-it  --method direct
+#   geocentric_distant   gemma-2-27b-it  --method direct
+#
+#   condor_submit chtc/exp_run_sweep.sub
+
+universe = container
+container_image = docker://studdiford/causal:v8
+
+batch_name = worldmodels_sweep_$(Cluster)
+log    = logs/$(Cluster)_$(Process).log
+output = logs/$(Cluster)_$(Process).out
+error  = logs/$(Cluster)_$(Process).err
+
+executable = experiment.sh
+arguments  = sweep_ablations $(model) stimuli/general_eval.csv general_instruct data/model/ablation --subset-categories $(categories) $(extra)
+
+should_transfer_files = YES
+transfer_input_files  = experiment.sh, gpu_monitor.sh, llm-world-models.tar
+transfer_output_files = result, gpu_metrics.csv
+when_to_transfer_output = ON_EXIT
+
+environment = "CLUSTER_ID=$(Cluster) PROCESS_ID=$(Process)"
+
++WantGPULab   = true
++GPUJobLength = "short"
++is_resumable = true
+
+request_gpus   = 1
+request_cpus   = 4
+request_memory = 64GB
+request_disk   = 150GB
+gpus_minimum_memory = 40000
+
+max_idle = 200
+
+queue categories, model, extra from params.txt

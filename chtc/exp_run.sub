@@ -1,0 +1,38 @@
+# Single-GPU experiment. Use for models that fit one GPU (<=30B in bf16).
+#
+#   condor_submit chtc/exp_run.sub \
+#       EXP_ARGS="general_eval gemma-2-9b-it stimuli/general_eval.csv general_instruct data/model/behavioral"
+#
+# For >30B models use exp_run_multigpu.sub instead.
+
+universe = container
+container_image = docker://studdiford/causal:v8
+
+batch_name = worldmodels_$(Cluster)
+log    = logs/$(Cluster)_$(Process).log
+output = logs/$(Cluster)_$(Process).out
+error  = logs/$(Cluster)_$(Process).err
+
+executable = experiment.sh
+arguments  = $(EXP_ARGS)
+
+should_transfer_files = YES
+transfer_input_files  = experiment.sh, gpu_monitor.sh, llm-world-models.tar
+transfer_output_files = result, gpu_metrics.csv
+when_to_transfer_output = ON_EXIT
+
+environment = "CLUSTER_ID=$(Cluster) PROCESS_ID=$(Process)"
+
++WantGPULab   = true
++GPUJobLength = "short"
++is_resumable = false
+
+request_gpus   = 1
+request_cpus   = 4
+request_memory = 64GB
+request_disk   = 150GB
+
+# Keep GPU requirements broad; raise this only if the model actually needs it.
+gpus_minimum_memory = 40000
+
+queue 1

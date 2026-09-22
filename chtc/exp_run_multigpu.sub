@@ -1,0 +1,46 @@
+# Distributed experiment for models above ~30B parameters.
+#
+# The model is sharded across every GPU in the slot, automatically:
+#   hf     device_map="auto"        (accelerate splits the layers)
+#   tlens  n_devices=<gpu count>    (TransformerLens splits the blocks)
+#   vllm   tensor_parallel_size=<gpu count>
+# `utils/model_utils.load_model` reads `n_params_b` from config/models.json and
+# turns sharding on past SHARD_THRESHOLD_B, so nothing here needs to change
+# per model beyond request_gpus.
+#
+#   condor_submit chtc/exp_run_multigpu.sub \
+#       EXP_ARGS="sweep_ablations gemma-3-27b-it stimuli/general_eval.csv general_instruct data/model/ablation --method attribution"
+#
+# Multi-GPU slots queue longer than single-GPU ones. If the work splits into
+# independent pieces (e.g. per category), prefer exp_run_sweep.sub instead.
+
+universe = container
+container_image = docker://studdiford/causal:v8
+
+batch_name = worldmodels_dist_$(Cluster)
+log    = logs/$(Cluster)_$(Process).log
+output = logs/$(Cluster)_$(Process).out
+error  = logs/$(Cluster)_$(Process).err
+
+executable = experiment.sh
+arguments  = $(EXP_ARGS)
+
+should_transfer_files = YES
+transfer_input_files  = experiment.sh, gpu_monitor.sh, llm-world-models.tar
+transfer_output_files = result, gpu_metrics.csv
+when_to_transfer_output = ON_EXIT
+
+environment = "CLUSTER_ID=$(Cluster) PROCESS_ID=$(Process)"
+
++WantGPULab   = true
++GPUJobLength = "medium"
++is_resumable = false
+
+request_gpus   = 2
+request_cpus   = 8
+request_memory = 200GB
+request_disk   = 400GB
+
+gpus_minimum_memory = 80000
+
+queue 1
